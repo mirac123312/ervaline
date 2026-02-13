@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erva ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-pink: #ff758c;
+            --accent-pink: #ff2d75;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--primary-pink) 0%, #ff7eb3 100%);
+            overflow-x: hidden;
+            text-align: center;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* 🚪 GİRİŞ EKRANI */
+        #entryScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ff758c;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+            cursor: pointer;
+        }
+
+        .entry-heart {
+            font-size: 80px;
+            animation: pulse 1.5s infinite;
+            margin-bottom: 20px;
+        }
+
+        .entry-text {
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+        }
+
+        /* ANA İÇERİK (Giriş yapılana kadar gizli) */
+        .container {
+            position: relative;
+            z-index: 2;
+            padding: 40px 15px;
+            max-width: 500px;
+            margin: auto;
+            display: none; 
+        }
+
+        .glass-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 30px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1 { font-size: 2.2em; margin-bottom: 15px; }
+
+        #typeText {
+            font-size: 1.1em;
+            height: 80px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        #motto {
+            background: white;
+            color: var(--accent-pink);
+            padding: 10px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .slider {
+            width: 260px;
+            height: 340px;
+            margin: 20px auto;
+            border: 6px solid white;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slider img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            left: 0; top: 0; opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+
+        .slider img.active { opacity: 1; }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: white;
+            color: var(--accent-pink);
+            font-weight: bold;
+            margin: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* 🎮 OYUN EKRANI */
+        #gameCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: none;
+            background: rgba(20, 0, 10, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        .game-heart {
+            position: absolute;
+            font-size: 60px;
+            cursor: pointer;
+            user-select: none;
+            filter: drop-shadow(0 0 10px var(--accent-pink));
+        }
+
+        .floating-word {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            pointer-events: none;
+            animation: fadeUp 1s forwards;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-50px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .heart {
+            position: fixed;
+            top: -20px;
+            pointer-events: none;
+            z-index: 1;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="entryScreen" onclick="enterSite()">
+        <div class="entry-heart">❤️</div>
+        <div class="entry-text">Giriş İçin Tıkla</div>
+    </div>
+
+    <div id="gameCanvas">
+        <div style="margin-top: 20px; font-size: 1.2rem;">
+            Kalbimin Parçalarını Topla Erva ❤️<br>
+            <span style="font-size: 2rem;"><span id="scoreVal">0</span> / 10</span>
+        </div>
+        <div id="targetHeart" class="game-heart">❤️</div>
+        <button style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--accent-pink); color: white;" onclick="oyunuKapat()">Oyunu Kapat</button>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <div class="glass-box">
+            <h1>Erva ❤️</h1>
+            <p id="typeText"></p>
+            <div id="motto">İyi ki Benimlesin</div>
+            <div class="slider">
+                <img src="foto1.jpg" class="active">
+                <img src="foto2.jpg">
+                <img src="foto3.jpg">
+            </div>
+            <div class="btn-group">
+                <button onclick="oyunuBaslat()">🎮 OYUN</button>
+                <button onclick="sifreSor()">🔒 Özel Mesaj</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="muzik.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <script>
+        const words = ["Gülüşün", "Huzurum", "Sonsuzum", "Neşem", "İyi ki", "Dünyam", "Canım", "Her Şeyim", "Erva'm", "Sevdiğim"];
+
+        function enterSite() {
+            document.getElementById('entryScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('entryScreen').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                yaz(); 
+                muzikCal();
+            }, 1000);
+        }
+
+        /* ❤️ KALP YAĞMURU */
+        setInterval(() => {
+            let h = document.createElement("div");
+            h.className = "heart";
+            h.innerHTML = "❤️";
+            h.style.left = Math.random() * 100 + "vw";
+            h.style.animationDuration = (3 + Math.random() * 3) + "s";
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 6000);
+        }, 450);
+
+        /* 💬 YAZI ANİMASYONU */
+        const text = "Erva, seninle her şey o kadar doğal ve güzel gelişti ki... Sanki eksik olan parçamı bulmuşum gibi hissediyorum. İyi ki hayatımdasın. ❤️";
+        let i = 0;
+        function yaz() {
+            if (i < text.length) {
+                document.getElementById("typeText").innerHTML += text.charAt(i);
+                i++;
+                setTimeout(yaz, 60);
+            }
+        }
+
+        /* 📸 SLIDER */
+        let slides = document.querySelectorAll(".slider img");
+        let index = 0;
+        setInterval(() => {
+            slides[index].classList.remove("active");
+            index = (index + 1) % slides.length;
+            slides[index].classList.add("active");
+        }, 3500);
+
+        /* 🎮 OYUN */
+        let score = 0;
+        const gameScreen = document.getElementById("gameCanvas");
+        const target = document.getElementById("targetHeart");
+        const scoreDisplay = document.getElementById("scoreVal");
+
+        function oyunuBaslat() {
+            score = 0;
+            scoreDisplay.innerText = score;
+            gameScreen.style.display = "block";
+            moveHeart();
+        }
+
+        function moveHeart() {
+            const maxX = window.innerWidth - 80;
+            const maxY = window.innerHeight - 150;
+            target.style.left = (Math.random() * maxX) + "px";
+            target.style.top = (Math.random() * maxY + 100) + "px";
+        }
+
+        target.onclick = function(e) {
+            e.stopPropagation();
+            const word = document.createElement("div");
+            word.className = "floating-word";
+            word.innerText = words[score % words.length];
+            word.style.left = e.clientX + "px";
+            word.style.top = e.clientY + "px";
+            document.body.appendChild(word);
+            setTimeout(() => word.remove(), 1000);
+
+            score++;
+            scoreDisplay.innerText = score;
+            if (score >= 10) {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                alert("Tüm parçaları topladın Ervaline! ❤️");
+                oyunuKapat();
+            } else { moveHeart(); }
+        }
+
+        function oyunuKapat() { gameScreen.style.display = "none"; }
+
+        function sifreSor() {
+            let s = prompt("Şifremizi girer misin? ❤️");
+            if (s && s.toLowerCase().trim() === "abdus") {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                setTimeout(() => { alert("Seni çok seviyorum Erva! ❤️"); }, 500);
+            }
+        }
+
+        function muzikCal() { 
+            const music = document.getElementById("bgMusic");
+            music.play().catch(() => {}); 
+        }
+    </script>
+</body>
+</html>
